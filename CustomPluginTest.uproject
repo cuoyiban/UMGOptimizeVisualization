@@ -1,0 +1,36 @@
+{
+	"FileVersion": 3,
+	"EngineAssociation": "{C0D2C0EE-4CF3-871E-9C8E-F9889219DDFA}",
+	"Category": "",
+	"Description": "",
+	"Modules": [
+		{
+			"Name": "CustomPluginTest",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "Module_1_1",
+			"Type": "Editor",
+			"LoadingPhase": "Default"
+		}
+	],
+	"Plugins": [
+		{
+			"Name": "CustomPlugin2",
+			"Enabled": false
+		},
+		{
+			"Name": "CustomPlugin_WithToolbarBtn",
+			"Enabled": false
+		},
+		{
+			"Name": "CustomPlugin_WithWindow",
+			"Enabled": false
+		},
+		{
+			"Name": "CustomPlugin",
+			"Enabled": false
+		}
+	]
+}
