@@ -14,7 +14,7 @@ void SUIOptimizeVisualizationEntryAdapter::Construct(const FArguments& InArgs)
 	this->m_iEntrySeparation = InArgs._EntrySeparation;
 }
 
-SUIOptimizeVisualizationEntryAdapter::SUIOptimizeVisualizationEntryAdapter()
+SUIOptimizeVisualizationEntryAdapter::SUIOptimizeVisualizationEntryAdapter():m_iSubTreeWidget(0),m_iDir(0),m_iEntrySeparation(10)
 {
 	
 }
@@ -51,6 +51,7 @@ FVector2D SUIOptimizeVisualizationEntryAdapter::GetSize()
 	TSharedRef<SWidget> content = GetContent();
 	
 	content->SlatePrepass(content->GetTickSpaceGeometry().Scale);
-	return FVector2D(300 , GetContent()->GetDesiredSize().Y);
+	return GetContent()->GetDesiredSize();
+	//return FVector2D(300 , GetContent()->GetDesiredSize().Y);
 	//return FVector2D(50, 50);
 }

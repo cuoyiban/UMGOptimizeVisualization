@@ -78,10 +78,10 @@ TSharedPtr<SUIOptimizeVisualizationEntryAdapter> SUIOptimizeVisualizationTree::R
 
 void SUIOptimizeVisualizationTree::LayoutTree()
 {
-	LayoutRecursion(m_rootEntryAdapter, FVector2D(0, 0));
+	LayoutTreeRecursion(m_rootEntryAdapter, FVector2D(0, 0) , 0);
 }
 
-void SUIOptimizeVisualizationTree::LayoutRecursion(SUIOptimizeVisualizationEntryAdapter* entryAdapter, FVector2D beginPosition)
+void SUIOptimizeVisualizationTree::LayoutTreeRecursion(SUIOptimizeVisualizationEntryAdapter* entryAdapter, FVector2D beginPosition , int iLayer)
 {
 	FSlot& slot = **(m_WidgetToSlot.Find(entryAdapter));
 	FVector2D size = entryAdapter->GetSize();
@@ -90,13 +90,15 @@ void SUIOptimizeVisualizationTree::LayoutRecursion(SUIOptimizeVisualizationEntry
 	TArray<SUIOptimizeVisualizationEntryAdapter*> arrChildren = entryAdapter->GetChildrenInTree();
 
 	int currentAdapterWidgetInTree = entryAdapter->GetSubTreeWidget();
-	FVector2D childPosition(beginPosition.X + size.X + m_iLayerSeparation, beginPosition.Y - currentAdapterWidgetInTree / 2);
+
+	int iLayerHeight = *m_mapLayerHeight.Find(iLayer);
+	FVector2D childPosition(beginPosition.X + iLayerHeight + m_iLayerSeparation, beginPosition.Y - currentAdapterWidgetInTree / 2);
 	TArray<FVector2D> arrEndPosition;
 	for (int i = 0; i < arrChildren.Num(); i++)
 	{
 		int childTreeWidget = arrChildren[i]->GetSubTreeWidget();
 		childPosition.Y = childPosition.Y + childTreeWidget / 2;
-		LayoutRecursion(arrChildren[i], childPosition);
+		LayoutTreeRecursion(arrChildren[i], childPosition , iLayer + 1);
 		arrEndPosition.Add(childPosition);
 		childPosition.Y = childPosition.Y + childTreeWidget / 2 + m_iEntrySeparation;
 	}
@@ -216,8 +218,9 @@ FLogicNode_VisualizationTree* SUIOptimizeVisualizationTree::RecursionParseUWidge
 
 void SUIOptimizeVisualizationTree::GenerateTree()
 {
+	//生成节点层级
 	m_rootEntryAdapter = GenerateFromLogicNodeRecursion(m_rootLogicNode).Get();
-	m_rootEntryAdapter->ComputerSubTreeWidget();
+	ComputerLayoutData();
 	LayoutTree();
 }
 
@@ -261,12 +264,34 @@ void SUIOptimizeVisualizationTree::ComputerLayoutData()
 	//subtrue widget
 	m_rootEntryAdapter->ComputerSubTreeWidget();
 	//layer height
-
+	TArray<SUIOptimizeVisualizationEntryAdapter *> temp;
+	temp.Add(m_rootEntryAdapter);
+	ComputerLayerHeightRecursion(temp, 0);
 }
 
-void SUIOptimizeVisualizationTree::ComputerLayerHeightRecursion(SUIOptimizeVisualizationEntryAdapter* currentAdapter , int iLayer )
+void SUIOptimizeVisualizationTree::ComputerLayerHeightRecursion(TArray<SUIOptimizeVisualizationEntryAdapter *> entryAdapterInLayer , int iLayer )
 {
+	if (entryAdapterInLayer.Num() != 0)
+	{
+		TArray<SUIOptimizeVisualizationEntryAdapter *> temp;
+		int iMaxHeight = 0;
+		for (int i = 0; i < entryAdapterInLayer.Num(); i++)
+		{
+			FVector2D entryAdapterSize = entryAdapterInLayer[i]->GetSize();
+			if (iMaxHeight < entryAdapterSize.X)
+			{
+				iMaxHeight = entryAdapterSize.X;
+			}
+			TArray<SUIOptimizeVisualizationEntryAdapter *> childTemp = entryAdapterInLayer[i]->GetChildrenInTree();
+			for (int j = 0; j < childTemp.Num(); j++)
+			{
+				temp.Add(childTemp[j]);
+			}
+		}
+		m_mapLayerHeight.Add(iLayer, iMaxHeight);
 
+		ComputerLayerHeightRecursion(temp, iLayer + 1);
+	}
 }
 
 #undef LOCTEXT_NAMESPACE

@@ -35,14 +35,15 @@ public:
 	FLogicNode_VisualizationTree * RecursionParseUWidget(UWidget* widget , UUserWidget *ownerWidget);
 
 	void GenerateTree();
+
 	TSharedPtr<SUIOptimizeVisualizationEntryAdapter> GenerateFromLogicNodeRecursion(FLogicNode_VisualizationTree* logicNode);
 
 	TSharedPtr<SUIOptimizeVisualizationEntryAdapter> RecursionGenerateFromWidgetTree(UWidgetTree* widgetTree , UWidget *currentWidget);
 
 	void LayoutTree();
-	void LayoutRecursion(SUIOptimizeVisualizationEntryAdapter* entryAdapter, FVector2D beginPosition);
+	void LayoutTreeRecursion(SUIOptimizeVisualizationEntryAdapter* entryAdapter, FVector2D beginPosition , int iLayer);
 
-	void ComputerLayerHeightRecursion(SUIOptimizeVisualizationEntryAdapter* currentAdapter , int iLayer);
+	void ComputerLayerHeightRecursion(TArray<SUIOptimizeVisualizationEntryAdapter *> entryAdapterInLayer, int iLayer);
 
 private:
 	TArray<UWidget*> GetChildWidgets(UWidget* parent, UUserWidget* owner = nullptr);
